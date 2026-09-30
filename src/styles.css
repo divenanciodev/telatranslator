@@ -59,7 +59,44 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-window: var(--window);
+  --color-window-foreground: var(--window-foreground);
+  --color-window-border: var(--window-border);
+  --color-window-hover: var(--window-hover);
+  --color-window-active: var(--window-active);
+  --color-overlay: var(--overlay);
+  --color-selection: var(--selection);
+  --color-selection-fill: var(--selection-fill);
+  --color-selection-label: var(--selection-label);
+  --color-desk: var(--desk);
+  --color-paper: var(--paper);
+  --color-paper-foreground: var(--paper-foreground);
+  --radius-window: 0.75rem;
+  --shadow-window: var(--shadow-window-value);
+  --animate-fade-in: fade-in 0.35s ease-out both;
+  --animate-marching: marching 1.4s linear infinite;
 }
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes marching {
+  from {
+    outline-offset: 0px;
+  }
+  to {
+    outline-offset: 3px;
+  }
+}
+
 
 :root {
   --radius: 0.625rem;
