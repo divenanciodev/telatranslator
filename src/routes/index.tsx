@@ -1,24 +1,84 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
+import { CaptureToolbar } from "@/components/capture/CaptureToolbar";
+import { SelectionLayer } from "@/components/capture/SelectionLayer";
+import { TranslationRegion } from "@/components/capture/TranslationRegion";
+import { DesktopBackdrop } from "@/components/capture/DesktopBackdrop";
+import { firstBatch, nextTranslatedLine, type TranslatedLine } from "@/components/capture/fakeTranslation";
+import type { CaptureMode, Phase, Rect } from "@/components/capture/types";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Tradutor de Tela — captura e traduz áreas da tela" },
+      {
+        name: "description",
+        content:
+          "Ferramenta de captura de tela que traduz o texto de uma área delimitada, com modo fixo para tradução contínua.",
+      },
+      { property: "og:title", content: "Tradutor de Tela — captura e traduz áreas da tela" },
+      {
+        property: "og:description",
+        content:
+          "Selecione uma área da tela e veja o texto traduzido na hora, ou use o modo fixo para tradução contínua.",
+      },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
+  const [mode, setMode] = useState<CaptureMode>("fixed");
+  const [phase, setPhase] = useState<Phase>("idle");
+  const [rect, setRect] = useState<Rect | null>(null);
+  const [lines, setLines] = useState<TranslatedLine[]>([]);
+  const indexRef = useRef(3);
+
+  // Modo fixo: continua traduzindo o que aparece na área até o usuário cancelar.
+  useEffect(() => {
+    if (phase !== "active" || mode !== "fixed") return;
+    const timer = window.setInterval(() => {
+      setLines((prev) => [...prev.slice(-5), nextTranslatedLine(indexRef.current++)]);
+    }, 2600);
+    return () => window.clearInterval(timer);
+  }, [phase, mode]);
+
+  function handleNew() {
+    setLines([]);
+    setRect(null);
+    indexRef.current = 3;
+    setPhase("selecting");
+  }
+
+  function handleCancel() {
+    setPhase("idle");
+    setRect(null);
+    setLines([]);
+  }
+
+  function handleComplete(selected: Rect) {
+    setRect(selected);
+    setLines(firstBatch());
+    setPhase("active");
+  }
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
+    <>
+      <DesktopBackdrop />
+
+      {phase === "selecting" && <SelectionLayer onComplete={handleComplete} />}
+
+      {phase === "active" && rect && (
+        <TranslationRegion rect={rect} mode={mode} lines={lines} live={mode === "fixed"} />
+      )}
+
+      <CaptureToolbar
+        mode={mode}
+        onModeChange={setMode}
+        phase={phase}
+        onNew={handleNew}
+        onCancel={handleCancel}
       />
-    </div>
+    </>
   );
 }
