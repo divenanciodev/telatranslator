@@ -132,7 +132,24 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+
+  /* Janela estilo Ferramenta de Captura */
+  --primary: oklch(0.58 0.17 253);
+  --window: oklch(0.985 0.002 250);
+  --window-foreground: oklch(0.24 0.02 260);
+  --window-border: oklch(0.9 0.008 255);
+  --window-hover: oklch(0.955 0.004 255);
+  --window-active: oklch(0.92 0.008 255);
+  --overlay: oklch(0.25 0.02 260 / 45%);
+  --selection: oklch(0.58 0.17 253);
+  --selection-fill: oklch(0.58 0.17 253 / 10%);
+  --selection-label: oklch(0.99 0.005 250);
+  --desk: oklch(0.32 0.025 258);
+  --paper: oklch(0.975 0.008 90);
+  --paper-foreground: oklch(0.22 0.015 260);
+  --shadow-window-value: 0 20px 45px -12px oklch(0.2 0.03 260 / 45%), 0 2px 8px oklch(0.2 0.03 260 / 12%);
 }
+
 
 .dark {
   --background: oklch(0.129 0.042 264.695);
