@@ -17,7 +17,7 @@ export function TranslationRegion({ rect, mode, lines, live }: Props) {
         style={{ left: rect.x, top: rect.y, width: rect.width, height: rect.height }}
       >
         <div className="flex h-full flex-col gap-2 overflow-hidden p-3">
-          <div className="flex items-center gap-2 text-xs font-medium text-selection-label">
+          <div className="flex w-fit items-center gap-2 rounded bg-window/95 px-2 py-1 text-xs font-medium text-primary shadow-sm">
             {live ? <Loader2 className="size-3.5 animate-spin" /> : <Languages className="size-3.5" />}
             {mode === "fixed" ? "Tradução ao vivo (Inglês → Português)" : "Texto traduzido (Inglês → Português)"}
           </div>
