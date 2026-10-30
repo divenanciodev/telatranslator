@@ -4,8 +4,8 @@ import { CaptureToolbar } from "@/components/capture/CaptureToolbar";
 import { SelectionLayer } from "@/components/capture/SelectionLayer";
 import { TranslationRegion } from "@/components/capture/TranslationRegion";
 import { DesktopBackdrop } from "@/components/capture/DesktopBackdrop";
-import { firstBatch, nextTranslatedLine, type TranslatedLine } from "@/components/capture/fakeTranslation";
-import type { CaptureMode, Phase, Rect } from "@/components/capture/types";
+import { firstBatch, nextTranslatedLine, nextVideoLine, type TranslatedLine } from "@/components/capture/fakeTranslation";
+import type { CaptureMode, Phase, Rect, VideoSource } from "@/components/capture/types";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -33,12 +33,14 @@ function Index() {
   const [rect, setRect] = useState<Rect | null>(null);
   const [lines, setLines] = useState<TranslatedLine[]>([]);
   const indexRef = useRef(3);
+  const [videoSource, setVideoSource] = useState<VideoSource>("subtitles");
 
   // Modo fixo: continua traduzindo o que aparece na área até o usuário cancelar.
   useEffect(() => {
-    if (phase !== "active" || mode !== "fixed") return;
+    if (phase !== "active" || mode === "screenshot") return;
     const timer = window.setInterval(() => {
-      setLines((prev) => [...prev.slice(-5), nextTranslatedLine(indexRef.current++)]);
+      const next = mode === "video" ? nextVideoLine(indexRef.current++) : nextTranslatedLine(indexRef.current++);
+      setLines((prev) => [...prev.slice(-5), next]);
     }, 2600);
     return () => window.clearInterval(timer);
   }, [phase, mode]);
@@ -58,7 +60,10 @@ function Index() {
 
   function handleComplete(selected: Rect) {
     setRect(selected);
-    setLines(firstBatch());
+    if (mode === "video") {
+      indexRef.current = 1;
+      setLines([nextVideoLine(0)]);
+    } else setLines(firstBatch());
     setPhase("active");
   }
 
@@ -69,7 +74,7 @@ function Index() {
       {phase === "selecting" && <SelectionLayer onComplete={handleComplete} />}
 
       {phase === "active" && rect && (
-        <TranslationRegion rect={rect} mode={mode} lines={lines} live={mode === "fixed"} />
+        <TranslationRegion rect={rect} mode={mode} lines={lines} live={mode !== "screenshot"} videoSource={videoSource} />
       )}
 
       <CaptureToolbar
@@ -78,6 +83,8 @@ function Index() {
         phase={phase}
         onNew={handleNew}
         onCancel={handleCancel}
+        videoSource={videoSource}
+        onVideoSourceChange={setVideoSource}
       />
     </>
   );
