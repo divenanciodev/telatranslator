@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Camera, Film, Mic, Captions, Minus, Plus, Square, Timer, Video, X, MoreHorizontal, Pin } from "lucide-react";
+import { Camera, FileText, Monitor, Film, Mic, Captions, Minus, Plus, Square, Timer, Video, X, MoreHorizontal, Pin } from "lucide-react";
 import type { CaptureMode, Phase, VideoSource } from "./types";
 
 type Props = {
@@ -85,16 +85,16 @@ export function CaptureToolbar({ mode, onModeChange, phase, onNew, onCancel, vid
 
         <div className="mx-1 flex items-center gap-1 rounded-lg bg-window-hover p-1">
           <ModeButton
-            active={mode === "fixed"}
-            onClick={() => onModeChange("fixed")}
-            icon={<Video className="size-4" />}
-            label="Fixo"
+            active={mode === "pdf"}
+            onClick={() => onModeChange("pdf")}
+            icon={<FileText className="size-4" />}
+            label="PDFs"
           />
           <ModeButton
-            active={mode === "screenshot"}
-            onClick={() => onModeChange("screenshot")}
-            icon={<Camera className="size-4" />}
-            label="Captura de tela"
+            active={mode === "screen"}
+            onClick={() => onModeChange("screen")}
+            icon={<Monitor className="size-4" />}
+            label="Tela"
           />
           <ModeButton
             active={mode === "video"}
@@ -154,10 +154,10 @@ export function CaptureToolbar({ mode, onModeChange, phase, onNew, onCancel, vid
               ? videoSource === "voice"
                 ? "Modo vídeo ativo — ouvindo a voz e gerando legendas em português. Clique em Cancelar para sair."
                 : "Modo vídeo ativo — lendo as legendas em inglês e traduzindo para português. Clique em Cancelar para sair."
-              : mode === "fixed"
-              ? "Modo fixo ativo — traduzindo continuamente. Clique em Cancelar para sair."
-              : "Captura concluída — texto traduzido exibido na área delimitada."
-            : `Modo selecionado: ${mode === "fixed" ? "Fixo" : mode === "video" ? "Vídeos" : "Captura de tela"}. ${mode === "video" ? "Delimite a área do vídeo. " : ""}Clique em Novo para começar.`}
+              : mode === "pdf"
+              ? "Modo PDF ativo — traduzindo o texto do PDF na área delimitada. Clique em Cancelar para sair."
+              : "Modo Tela ativo — cada palavra em inglês foi traduzida no próprio lugar. Clique em Cancelar para sair."
+            : `Modo selecionado: ${mode === "pdf" ? "PDFs" : mode === "video" ? "Vídeos" : "Tela"}. ${mode === "video" ? "Delimite a área do vídeo. " : mode === "screen" ? "A tela inteira será analisada. " : "Delimite a área do PDF. "}Clique em Novo para começar.`}
       </div>
     </div>
   );

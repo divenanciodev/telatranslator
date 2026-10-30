@@ -32,7 +32,7 @@ function FakeVideo() {
 
 export function DesktopBackdrop() {
   return (
-    <div className="min-h-screen bg-desk px-4 py-10">
+    <div data-screen-root className="min-h-screen bg-desk px-4 py-10">
       <FakeVideo />
       <div className="mx-auto max-w-3xl rounded-lg bg-paper p-10 font-serif text-[15px] leading-relaxed text-paper-foreground shadow-window">
         <h1 className="mb-6 text-lg">A friendly request to the reader!</h1>
