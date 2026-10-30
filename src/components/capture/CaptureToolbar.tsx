@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Camera, Minus, Plus, Square, Timer, Video, X, MoreHorizontal, Pin } from "lucide-react";
-import type { CaptureMode, Phase } from "./types";
+import { Camera, Film, Mic, Captions, Minus, Plus, Square, Timer, Video, X, MoreHorizontal, Pin } from "lucide-react";
+import type { CaptureMode, Phase, VideoSource } from "./types";
 
 type Props = {
   mode: CaptureMode;
@@ -8,15 +8,17 @@ type Props = {
   phase: Phase;
   onNew: () => void;
   onCancel: () => void;
+  videoSource: VideoSource;
+  onVideoSourceChange: (s: VideoSource) => void;
 };
 
-export function CaptureToolbar({ mode, onModeChange, phase, onNew, onCancel }: Props) {
+export function CaptureToolbar({ mode, onModeChange, phase, onNew, onCancel, videoSource, onVideoSourceChange }: Props) {
   const [pos, setPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [ready, setReady] = useState(false);
   const dragRef = useRef<{ dx: number; dy: number } | null>(null);
 
   useEffect(() => {
-    const width = 620;
+    const width = 760;
     setPos({
       x: Math.max(16, (window.innerWidth - width) / 2),
       y: Math.max(16, window.innerHeight * 0.16),
@@ -44,7 +46,7 @@ export function CaptureToolbar({ mode, onModeChange, phase, onNew, onCancel }: P
 
   return (
     <div
-      className="fixed z-50 w-[620px] max-w-[94vw] select-none overflow-hidden rounded-window border border-window-border bg-window shadow-window"
+      className="fixed z-50 w-[760px] max-w-[94vw] select-none overflow-hidden rounded-window border border-window-border bg-window shadow-window"
       style={{ left: pos.x, top: pos.y }}
     >
       <div
@@ -94,6 +96,12 @@ export function CaptureToolbar({ mode, onModeChange, phase, onNew, onCancel }: P
             icon={<Camera className="size-4" />}
             label="Captura de tela"
           />
+          <ModeButton
+            active={mode === "video"}
+            onClick={() => onModeChange("video")}
+            icon={<Film className="size-4" />}
+            label="Vídeos"
+          />
         </div>
 
         <div className="h-8 w-px bg-window-border" />
@@ -118,14 +126,38 @@ export function CaptureToolbar({ mode, onModeChange, phase, onNew, onCancel }: P
         )}
       </div>
 
+      {mode === "video" && (
+        <div className="flex items-center gap-2 px-4 pb-3 text-xs text-muted-foreground">
+          <span>Traduzir a partir de:</span>
+          <div className="flex items-center gap-1 rounded-lg bg-window-hover p-1">
+            <ModeButton
+              active={videoSource === "voice"}
+              onClick={() => onVideoSourceChange("voice")}
+              icon={<Mic className="size-3.5" />}
+              label="Voz → legenda PT"
+            />
+            <ModeButton
+              active={videoSource === "subtitles"}
+              onClick={() => onVideoSourceChange("subtitles")}
+              icon={<Captions className="size-3.5" />}
+              label="Legendas EN → PT"
+            />
+          </div>
+        </div>
+      )}
+
       <div className="border-t border-window-border px-4 py-2.5 text-xs text-muted-foreground">
         {phase === "selecting"
           ? "Arraste para delimitar a área da tela que deseja traduzir."
           : phase === "active"
-            ? mode === "fixed"
+            ? mode === "video"
+              ? videoSource === "voice"
+                ? "Modo vídeo ativo — ouvindo a voz e gerando legendas em português. Clique em Cancelar para sair."
+                : "Modo vídeo ativo — lendo as legendas em inglês e traduzindo para português. Clique em Cancelar para sair."
+              : mode === "fixed"
               ? "Modo fixo ativo — traduzindo continuamente. Clique em Cancelar para sair."
               : "Captura concluída — texto traduzido exibido na área delimitada."
-            : `Modo selecionado: ${mode === "fixed" ? "Fixo" : "Captura de tela"}. Clique em Novo para começar.`}
+            : `Modo selecionado: ${mode === "fixed" ? "Fixo" : mode === "video" ? "Vídeos" : "Captura de tela"}. ${mode === "video" ? "Delimite a área do vídeo. " : ""}Clique em Novo para começar.`}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { Languages, Loader2 } from "lucide-react";
-import type { CaptureMode, Rect } from "./types";
+import type { CaptureMode, Rect, VideoSource } from "./types";
 import type { TranslatedLine } from "./fakeTranslation";
 
 type Props = {
@@ -7,9 +7,33 @@ type Props = {
   mode: CaptureMode;
   lines: TranslatedLine[];
   live: boolean;
+  videoSource?: VideoSource;
 };
 
-export function TranslationRegion({ rect, mode, lines, live }: Props) {
+export function TranslationRegion({ rect, mode, lines, live, videoSource }: Props) {
+  if (mode === "video") {
+    const last = lines[lines.length - 1];
+    return (
+      <div className="pointer-events-none fixed inset-0 z-30">
+        <div
+          className="absolute animate-marching border-2 border-dashed border-selection"
+          style={{ left: rect.x, top: rect.y, width: rect.width, height: rect.height }}
+        >
+          <div className="absolute left-2 top-2 flex items-center gap-2 rounded bg-window/95 px-2 py-1 text-xs font-medium text-primary shadow-sm">
+            <Loader2 className="size-3.5 animate-spin" />
+            {videoSource === "voice" ? "Voz → legenda em Português" : "Legendas Inglês → Português"}
+          </div>
+          {last && (
+            <div className="absolute inset-x-4 bottom-4 flex justify-center">
+              <p key={last.id} className="animate-fade-in rounded bg-window px-4 py-2 text-center text-lg font-semibold text-window-foreground shadow-window">
+                {last.translated}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="pointer-events-none fixed inset-0 z-30">
       <div

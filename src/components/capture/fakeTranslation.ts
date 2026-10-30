@@ -58,3 +58,20 @@ export function nextTranslatedLine(index: number): TranslatedLine {
 export function firstBatch(): TranslatedLine[] {
   return [0, 1, 2].map((i) => nextTranslatedLine(i));
 }
+
+const VIDEO_SAMPLES: Array<{ source: string; translated: string }> = [
+  { source: "Welcome back to the channel, everyone.", translated: "Bem-vindos de volta ao canal, pessoal." },
+  { source: "Today we're going to talk about formal logic.", translated: "Hoje vamos falar sobre lógica formal." },
+  { source: "Let's start with a simple example.", translated: "Vamos começar com um exemplo simples." },
+  { source: "If it rains, the street gets wet.", translated: "Se chover, a rua fica molhada." },
+  { source: "Does that sound reasonable to you?", translated: "Isso parece razoável para você?" },
+  { source: "Don't forget to like and subscribe!", translated: "Não esqueça de curtir e se inscrever!" },
+];
+
+export function nextVideoLine(index: number): TranslatedLine {
+  const sample = VIDEO_SAMPLES[index % VIDEO_SAMPLES.length]!;
+  counter += 1;
+  return { id: counter, ...sample };
+}
+
+export const VIDEO_SOURCE_LINES = VIDEO_SAMPLES.map((s) => s.source);
