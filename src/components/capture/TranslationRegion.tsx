@@ -43,7 +43,7 @@ export function TranslationRegion({ rect, mode, lines, live, videoSource }: Prop
         <div className="flex h-full flex-col gap-2 overflow-hidden p-3">
           <div className="flex w-fit items-center gap-2 rounded bg-window/95 px-2 py-1 text-xs font-medium text-primary shadow-sm">
             {live ? <Loader2 className="size-3.5 animate-spin" /> : <Languages className="size-3.5" />}
-            {mode === "fixed" ? "Tradução ao vivo (Inglês → Português)" : "Texto traduzido (Inglês → Português)"}
+            {"Tradução do PDF (Inglês → Português)"}
           </div>
           <div className="flex-1 space-y-2 overflow-hidden rounded-md bg-window/95 p-3 text-sm leading-relaxed text-window-foreground shadow-window">
             {lines.map((line) => (

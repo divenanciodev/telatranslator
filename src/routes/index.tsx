@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { CaptureToolbar } from "@/components/capture/CaptureToolbar";
 import { SelectionLayer } from "@/components/capture/SelectionLayer";
 import { TranslationRegion } from "@/components/capture/TranslationRegion";
+import { ScreenWordOverlay } from "@/components/capture/ScreenWordOverlay";
 import { DesktopBackdrop } from "@/components/capture/DesktopBackdrop";
 import { firstBatch, nextTranslatedLine, nextVideoLine, type TranslatedLine } from "@/components/capture/fakeTranslation";
 import type { CaptureMode, Phase, Rect, VideoSource } from "@/components/capture/types";
@@ -28,7 +29,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const [mode, setMode] = useState<CaptureMode>("fixed");
+  const [mode, setMode] = useState<CaptureMode>("pdf");
   const [phase, setPhase] = useState<Phase>("idle");
   const [rect, setRect] = useState<Rect | null>(null);
   const [lines, setLines] = useState<TranslatedLine[]>([]);
@@ -37,7 +38,7 @@ function Index() {
 
   // Modo fixo: continua traduzindo o que aparece na área até o usuário cancelar.
   useEffect(() => {
-    if (phase !== "active" || mode === "screenshot") return;
+    if (phase !== "active" || mode === "screen") return;
     const timer = window.setInterval(() => {
       const next = mode === "video" ? nextVideoLine(indexRef.current++) : nextTranslatedLine(indexRef.current++);
       setLines((prev) => [...prev.slice(-5), next]);
@@ -49,7 +50,7 @@ function Index() {
     setLines([]);
     setRect(null);
     indexRef.current = 3;
-    setPhase("selecting");
+    setPhase(mode === "screen" ? "active" : "selecting");
   }
 
   function handleCancel() {
@@ -73,13 +74,15 @@ function Index() {
 
       {phase === "selecting" && <SelectionLayer onComplete={handleComplete} />}
 
-      {phase === "active" && rect && (
-        <TranslationRegion rect={rect} mode={mode} lines={lines} live={mode !== "screenshot"} videoSource={videoSource} />
+      {phase === "active" && mode === "screen" && <ScreenWordOverlay />}
+
+      {phase === "active" && rect && mode !== "screen" && (
+        <TranslationRegion rect={rect} mode={mode} lines={lines} live={true} videoSource={videoSource} />
       )}
 
       <CaptureToolbar
         mode={mode}
-        onModeChange={setMode}
+        onModeChange={(m) => { setMode(m); handleCancel(); }}
         phase={phase}
         onNew={handleNew}
         onCancel={handleCancel}

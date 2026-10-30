@@ -1,4 +1,4 @@
-export type CaptureMode = "fixed" | "screenshot" | "video";
+export type CaptureMode = "pdf" | "screen" | "video";
 
 export type Rect = { x: number; y: number; width: number; height: number };
 
